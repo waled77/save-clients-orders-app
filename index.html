@@ -186,13 +186,15 @@
                 sales.push(saleItem);
                 localStorage.setItem("sales", JSON.stringify(sales));
                 
-                // تفريغ الحقول بعد الإضافة
+           
+
+                loadSales();
+
+                     // تفريغ الحقول بعد الإضافة
                 document.getElementById("item").value = "";
                 document.getElementById("size").value = "";
                 document.getElementById("quantity").value = "";
                 document.getElementById("color").value = "";
-
-                loadSales();
                 
             }
           
