@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>save-clients-orders-app</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+       * {
+        margin: 0;
+        padding: 0;
+        box-sizing: 0;
+      }
+
+      body {
+        font-family: "Cairo", sans-serif;
+        text-align: center;
+        direction: rtl;
+        background-color: #f7f7f7
+      }
+
+      nav {
+        color: #fff;
+        padding: 20px;
+        margin-bottom: 0px;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #222;
+      }
+
+      nav ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin: 0 10px;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: #fff;
+        font-weight: 500;
+      }
+
+      .hero {
+        margin: 20px 0;
+      }
+
+      .order-form {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        margin: auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+
+      .orders-list {
+        margin: 20px auto;
+        max-width: 500px;
+      }
+
+      button {
+        font-size: 14px;
+        background: #222;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        margin-top: 10px;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        transition: .3s linear;
+      }
+
+      p {
+        font-size: 14px;
+        background-color: #eee;
+        display: inline-block;
+        border-radius: 15px;
+        padding: 5px 15px;
+      }
+
+      h1 {
+        font-size: 40px;
+        margin-top: 30px;
+        margin-bottom: 60px;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        margin-top: 60px;
+      }
+
+      .form input {
+        padding: 12px ;
+        margin-bottom: 20px;
+        border: none;
+        background-color: #ddd;
+      }
+
+      .form input::placeholder {
+        color: #777;
+      }
+
+      #sales {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #sales li {
+        width: 100%;
+        padding: 20px 0;
+        background: #fff;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        align-items: center;
+        color: #222;
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+
+    </style>
+  </head>
+<body>
+    <nav>
+      <a href="#"><h3>دشداشة</h3></a>
+        <ul>
+            <li><a href="#home" onclick="showPage('home')">الرئيسية</a></li>
+            <li><a href="#orders" onclick="showPage('orders')">الطلبات</a></li>
+            <li><a href="#add-order" onclick="showPage('add-order')">إضافة طلب</a></li>
+        </ul>
+    </nav>
+    
+    <div id="home" class="page">
+        <h1><i class="fas fa-store"></i> مرحبًا بك في تخزين طلبات دشداشة</h1>
+        <p>
+          هنا المكان الراقي لشراء الثوب الرجالي والملابس
+        </p>
+    </div>
+    
+    <div id="orders" class="page" style="display: none;">
+        <ul id="sales"></ul>
+    </div>
+    
+    <div id="add-order" class="page" style="display: none;">
+        <div class="form">
+            <input type="text" id="item" placeholder="اسم الصنف">
+            <input type="text" id="size" placeholder="المقاس">
+            <input type="text" id="quantity" placeholder="عدد القطع">
+            <input type="text" id="color" placeholder="اللون">
+            <button onclick="addSale()"><i class="fas fa-plus-circle"></i> إضافة</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", loadSales);
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+        }
+        
+        function addSale() {
+            const item = document.getElementById("item").value;
+            const size = document.getElementById("size").value;
+            const quantity = document.getElementById("quantity").value;
+            const color = document.getElementById("color").value;
+            
+            if (item && size && quantity && color) {
+                const saleItem = ` ${item} - ${size} - ${color} - ${quantity}  `;
+                let sales = JSON.parse(localStorage.getItem("sales")) || [];
+                sales.push(saleItem);
+                localStorage.setItem("sales", JSON.stringify(sales));
+                
+                // تفريغ الحقول بعد الإضافة
+                document.getElementById("item").value = "";
+                document.getElementById("size").value = "";
+                document.getElementById("quantity").value = "";
+                document.getElementById("color").value = "";
+
+                loadSales();
+                
+            }
+          
+        }
+        
+        function loadSales() {
+            const salesList = document.getElementById("sales");
+            salesList.innerHTML = "";
+            let sales = JSON.parse(localStorage.getItem("sales")) || [];
+            sales.forEach((sale, index) => {
+                const li = document.createElement("li");
+                li.textContent = sale;
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "حذف";
+                deleteBtn.onclick = () => deleteSale(index);
+                li.appendChild(deleteBtn);
+                salesList.appendChild(li);
+            });
+        }
+        
+        function deleteSale(index) {
+            let sales = JSON.parse(localStorage.getItem("sales")) || [];
+            sales.splice(index, 1);
+            localStorage.setItem("sales", JSON.stringify(sales));
+            loadSales();
+        }
+
+
+    </script>
+</body>
+</html>
